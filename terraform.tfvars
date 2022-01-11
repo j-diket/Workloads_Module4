@@ -1,0 +1,1 @@
+aws_region_primary = "us-east-1"
