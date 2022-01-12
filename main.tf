@@ -33,6 +33,9 @@ resource "aws_iam_role" "beanstalk_service" {
   }
 }
 
+# DATABASE **********************
+
+# Document DB
 resource "aws_docdb_cluster" "NBoS" {
   cluster_identifier      = "NBoS-cluster"
   engine                  = "docdb"
@@ -43,5 +46,22 @@ resource "aws_docdb_cluster" "NBoS" {
   backup_retention_period = 5
   preferred_backup_window = "19:00-21:00"
   skip_final_snapshot     = false
-  final_snapshot_identifier = NBoS-final-cluster-snap
+  final_snapshot_identifier = "NBoS-final-cluster-snap"
+}
+
+# RDS
+resource "aws_db_instance" "NBoS" {
+  count = length(var.)
+
+  allocated_storage    = 10
+  max_allocated_storage = 25
+  engine               = "mysql"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.micro"
+  name                 = "mydb"
+  username             = "foo"
+  password             = "foobarbaz"
+  parameter_group_name = "default.mysql5.7"
+  skip_final_snapshot  = false
+  final_snapshot_identifier = "NBoS-final-rds-snap"
 }
