@@ -4,3 +4,8 @@ variable "aws_region_primary" {
   
 }
 
+variable "azs" {
+    description = "Availability Zones for use"
+    type = list(string)
+  
+}
