@@ -1,5 +1,5 @@
 resource "aws_elastic_beanstalk_application" "NBoS" {
-  name        = "NB of S Front End"
+  name        = "NBoS_Frontend"
   description = "Front end Angular application for deployment of services."
 
   appversion_lifecycle {
@@ -31,4 +31,38 @@ resource "aws_iam_role" "beanstalk_service" {
   tags = {
     Service = "ELB"
   }
+}
+
+# DATABASE **********************
+
+# Document DB
+resource "aws_docdb_cluster" "NBoS" {
+  cluster_identifier      = "NBoS-cluster"
+  engine                  = "docdb"
+  availability_zones = var.azs
+  master_username         = "NBoS-dev"
+  master_password         = "mustbeeightchars"
+  vpc_security_group_ids = ""
+  backup_retention_period = 5
+  preferred_backup_window = "19:00-21:00"
+  skip_final_snapshot     = false
+  final_snapshot_identifier = "NBoS-final-cluster-snap"
+}
+
+# RDS
+resource "aws_db_instance" "NBoS" {
+  # want deployed within each private(?) subnet, pulled data from LZ
+  count = length()
+
+  allocated_storage    = 10
+  max_allocated_storage = 25
+  engine               = "mysql"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.micro"
+  name                 = "NBoS-SB-${count.index}"
+  username             = "foo"
+  password             = "foobarbaz"
+  parameter_group_name = "default.mysql5.7"
+  skip_final_snapshot  = false
+  final_snapshot_identifier = "NBoS-final-rds-snap"
 }
