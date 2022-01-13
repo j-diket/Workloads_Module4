@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "this" {
     ]
 
     principals {
-      type = "Servive"
-      identifiers = ["elb.amazonaws.com"]
+      type = "Service"
+      identifiers = ["elasticbeanstalk.amazonaws.com"]
     }
   }
 }
