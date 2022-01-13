@@ -40,7 +40,7 @@ resource "aws_docdb_cluster" "NBoS" {
   cluster_identifier        = lower("NBoS-cluster")
   engine                    = "docdb"
   availability_zones        = var.azs
-  master_username           = "NBoS-dev"
+  master_username           = "NBoSdev"
   master_password           = "mustbeeightchars"
   backup_retention_period   = 5
   preferred_backup_window   = "19:00-21:00"
