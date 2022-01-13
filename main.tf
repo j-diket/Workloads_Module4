@@ -99,7 +99,7 @@ resource "aws_lambda_function" "NBoS_lambda" {
   s3_bucket     = data.aws_s3_bucket.NBoS_bucket
   function_name = "Hello World"
   role          = aws_iam_role.iam_for_lambda.arn
-
+  filename = file("{path.module}/hello_world.py")
   source_code_hash = filebase64sha256("lambda_function_payload.zip")
 
   runtime = "python3.9"
