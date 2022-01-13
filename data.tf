@@ -9,11 +9,17 @@ data "aws_vpc" "NBoS_vpc" {
     }
 }
 
-data "aws_subnet_ids" "NBoS_public_subnets" {
-  vpc_id = data.aws_vpc.NBoS_vpc.id
+data "aws_subnet" "NBoS_public_subnets" {
   filter {
     name = "tag:Name"
     values = ["Public-*"]
+  }
+}
+
+data "aws_subnet" "NBoS_private_subnets" {
+  filter {
+    name = "tag:Name"
+    values = ["Private-*"]
   }
 }
 
