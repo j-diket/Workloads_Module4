@@ -5,5 +5,5 @@ output "vpc_id" {
 
 output "public_subnets" {
     description = "value"
-    value = data.aws_subnets.NBoS_subnets.id  
+    value = data.aws_subnet_ids.NBoS_subnets.id  
 }
