@@ -37,16 +37,22 @@ resource "aws_iam_role" "beanstalk_service" {
 
 # Document DB
 resource "aws_docdb_cluster" "NBoS" {
-  cluster_identifier        = "NBoS-cluster"
+  cluster_identifier        = lower("NBoS-cluster")
   engine                    = "docdb"
   availability_zones        = var.azs
-  master_username           = "NBoS-dev"
+  master_username           = "NBoSdev"
   master_password           = "mustbeeightchars"
-  vpc_security_group_ids    = ""
   backup_retention_period   = 5
   preferred_backup_window   = "19:00-21:00"
   skip_final_snapshot       = false
   final_snapshot_identifier = "NBoS-final-cluster-snap"
+}
+
+resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
+  count              = length(var.azs)
+  identifier         = "NBoS-docdb-cluster-${count.index}"
+  cluster_identifier = aws_docdb_cluster.default.id
+  instance_class     = "db.t3.medium"
 }
 
 # RDS
