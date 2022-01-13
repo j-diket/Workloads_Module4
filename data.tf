@@ -1,5 +1,12 @@
 data "aws_vpc" "NBoS_vpc" {
-  id = var.vpc_id
+    filter {
+      name = "tag:Name"
+      values = ["NBoS"]
+    }
+    filter {
+      name = "tag:Stage"
+      values = ["dev"]
+    }
 }
 
 data "aws_subnets" "NBoS_subnets" {
