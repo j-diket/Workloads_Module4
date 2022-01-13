@@ -9,24 +9,24 @@ resource "aws_elastic_beanstalk_application" "NBoS" {
   }
 }
 
+data "aws_iam_policy_document" "this" {
+  statement {
+    sid = "1"
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+
+    principals {
+      type = "Servive"
+      identifiers = ["elb.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "beanstalk_service" {
   name = "test_role"
-
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "elb.amazonaws.com"
-        }
-      },
-    ]
-  })
+  assume_role_policy = data.aws_iam_policy_document.this.json
 
   tags = {
     Service = "ELB"

@@ -1,17 +1,26 @@
 data "aws_vpc" "NBoS_vpc" {
-  id = var.vpc_id
+    filter {
+      name = "tag:Name"
+      values = ["NBoS"]
+    }
+    filter {
+      name = "tag:Stage"
+      values = ["dev"]
+    }
 }
 
-data "aws_subnets" "NBoS_subnets" {
+data "aws_subnet" "NBoS_public_subnets" {
   filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
+    name = "tag:Name"
+    values = ["Public-*"]
   }
 }
 
-data "aws_subnet" "NBoS_subnet" {
-  for_each = toset(data.aws_subnets.NBoS_subnets.ids)
-  id       = each.value
+data "aws_subnet" "NBoS_private_subnets" {
+  filter {
+    name = "tag:Name"
+    values = ["Private-*"]
+  }
 }
 
 data "aws_s3_bucket" "NBoS_bucket" {
