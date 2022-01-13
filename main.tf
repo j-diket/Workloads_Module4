@@ -49,6 +49,13 @@ resource "aws_docdb_cluster" "NBoS" {
   final_snapshot_identifier = "NBoS-final-cluster-snap"
 }
 
+resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
+  count              = length(var.azs)
+  identifier         = "NBoS-docdb-cluster-${count.index}"
+  cluster_identifier = aws_docdb_cluster.default.id
+  instance_class     = "db.t3.medium"
+}
+
 # RDS
 resource "aws_db_instance" "NBoS" {
   # want deployed within each private(?) subnet, pulled data from LZ
