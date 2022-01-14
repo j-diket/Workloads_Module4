@@ -75,6 +75,12 @@ resource "aws_db_instance" "NBoS" {
 
 # LAMBDA
 
+data "archive_file" "hello_world" {
+  type = "zip"
+  source_file = "${path.module}/hello_world.py"
+  output_path = "${path.module}/lambda_package/hello_world.zip"
+}
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
@@ -99,9 +105,17 @@ resource "aws_lambda_function" "NBoS_lambda" {
   s3_bucket     = data.aws_s3_bucket.NBoS_bucket
   function_name = "Hello World"
   role          = aws_iam_role.iam_for_lambda.arn
-  filename = file("{path.module}/hello_world.py")
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+  filename      = data.archive_file.hello_world.output_path
+  source_code_hash = data.archive_file.hello_world.output_base64sha256
 
   runtime = "python3.9"
+  timeout = 900
+  memory_size = 1024
+
+  environment {
+    variables = {
+      environment = "test"
+    }
+  }
 
 }
