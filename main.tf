@@ -119,3 +119,10 @@ resource "aws_lambda_function" "NBoS_lambda" {
   }
 
 }
+
+resource "aws_lambda_permission" "hello_world" {
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.NBoS_lambda.function_name
+  principal = "rds.amazonaws.com"
+  # source_arn = 
+}
