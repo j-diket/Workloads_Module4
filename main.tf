@@ -81,6 +81,8 @@ data "archive_file" "hello_world" {
   output_path = "${path.module}/lambda_package/hello_world.zip"
 }
 
+# add data block for role creation here
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "NBoS_lambda"
 
