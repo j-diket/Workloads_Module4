@@ -109,6 +109,7 @@ resource "aws_lambda_function" "NBoS_lambda" {
   source_code_hash = data.archive_file.hello_world.output_base64sha256
 
   runtime = "python3.9"
+  handler = "hello_world.hello_world"
   timeout = 900
   memory_size = 1024
 
@@ -117,6 +118,8 @@ resource "aws_lambda_function" "NBoS_lambda" {
       environment = "test"
     }
   }
+
+  # vpc_config would go here to restrict access
 
 }
 
