@@ -57,15 +57,16 @@ resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
 
 # RDS
 resource "aws_db_instance" "NBoS" {
-  # want deployed within each private(?) subnet, pulled data from LZ
-  count = length()
+  
+  count = length(data.NBoS_private_subnets)
 
   allocated_storage         = 10
   max_allocated_storage     = 25
   engine                    = "mysql"
   engine_version            = "5.7"
   instance_class            = "db.t3.micro"
-  name                      = "NBoS-SB-${count.index}"
+  name                      = "nbos-db-${count.index}"
+  availability_zone         = var.azs
   username                  = "foo"
   password                  = "foobarbaz"
   parameter_group_name      = "default.mysql5.7"
