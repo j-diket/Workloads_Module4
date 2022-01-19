@@ -1,3 +1,5 @@
+# COMPUTE
+
 resource "aws_elastic_beanstalk_application" "NBoS" {
   name        = "NBoS_Frontend"
   description = "Front end Angular application for deployment of services."
