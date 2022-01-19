@@ -66,7 +66,7 @@ resource "aws_db_instance" "NBoS" {
   engine_version            = "5.7"
   instance_class            = "db.t3.micro"
   name                      = "nbos-db-${count.index}"
-  availability_zone         = var.azs
+  availability_zone         = var.azs[count.index]
   username                  = "foo"
   password                  = "foobarbaz"
   parameter_group_name      = "default.mysql5.7"
