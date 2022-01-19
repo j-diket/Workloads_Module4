@@ -52,7 +52,7 @@ resource "aws_docdb_cluster" "NBoS" {
 
 resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
   count              = length(var.azs)
-  identifier         = "NBoS-docdb-cluster-${count.index}"
+  identifier         = "nbos-docdb-cluster-${count.index}"
   availability_zone  = var.azs[count.index]
   cluster_identifier = aws_docdb_cluster.NBoS.cluster_identifier
   instance_class     = "db.t3.medium"
@@ -68,7 +68,7 @@ resource "aws_db_instance" "NBoS" {
   engine                    = "mysql"
   engine_version            = "5.7"
   instance_class            = "db.t3.micro"
-  name                      = "nbos-db-${count.index}"
+  name                      = "nbosdb${count.index}"
   availability_zone         = var.azs[count.index]
   username                  = "foo"
   password                  = "foobarbaz"
@@ -108,8 +108,8 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 resource "aws_lambda_function" "NBoS_lambda" {
-  s3_bucket        = data.aws_s3_bucket.NBoS_bucket
-  function_name    = "Hello World"
+  # s3_bucket        = data.aws_s3_bucket.NBoS_bucket.bucket
+  function_name    = "HelloWorld"
   role             = aws_iam_role.iam_for_lambda.arn
   filename         = data.archive_file.hello_world.output_path
   source_code_hash = data.archive_file.hello_world.output_base64sha256
