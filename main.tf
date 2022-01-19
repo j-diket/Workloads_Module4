@@ -52,7 +52,7 @@ resource "aws_docdb_cluster" "NBoS" {
 
 resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
   count              = length(var.azs)
-  identifier         = "NBoS-docdb-cluster-${count.index}"
+  identifier         = "nbos-docdb-cluster-${count.index}"
   availability_zone  = var.azs[count.index]
   cluster_identifier = aws_docdb_cluster.NBoS.cluster_identifier
   instance_class     = "db.t3.medium"
