@@ -5,6 +5,12 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  backend "s3" {
+      bucket = "jd504-tf-state-bucket"
+      key = "workload/terraform.tfstate"
+      region = "us-east-1"
+  }
 }
 
 provider "aws" {
