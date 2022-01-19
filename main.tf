@@ -9,7 +9,7 @@ resource "aws_elastic_beanstalk_application" "NBoS" {
   }
 }
 
-data "aws_iam_policy_document" "this" {
+data "aws_iam_policy_document" "beanstalk_service" {
   statement {
     sid = "1"
     effect = "Allow"
@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "this" {
 
 resource "aws_iam_role" "beanstalk_service" {
   name = "test_role"
-  assume_role_policy = data.aws_iam_policy_document.this.json
+  assume_role_policy = data.aws_iam_policy_document.beanstalk_service.json
 
   tags = {
     Service = "ELB"
@@ -82,26 +82,24 @@ data "archive_file" "hello_world" {
   output_path = "${path.module}/lambda_package/hello_world.zip"
 }
 
-# add data block for role creation here
+data "aws_iam_policy_document" "lambda_service" {
+  statement {
+    sid = "1"
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      type = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "NBoS_lambda"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+  assume_role_policy = data.aws_iam_policy_document.lambda_service.json
 }
 
 resource "aws_lambda_function" "NBoS_lambda" {
@@ -130,5 +128,4 @@ resource "aws_lambda_permission" "hello_world" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.NBoS_lambda.function_name
   principal = "rds.amazonaws.com"
-  # source_arn = 
 }
