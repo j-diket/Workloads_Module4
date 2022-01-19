@@ -24,5 +24,5 @@ data "aws_subnets" "NBoS_private_subnets" {
 }
 
 data "aws_s3_bucket" "NBoS_bucket" {
-  bucket = "nbos-bucket-${var.stage}.s3.amazonaws.com"
+  bucket = "nbos-bucket-${var.stage}"
 }
