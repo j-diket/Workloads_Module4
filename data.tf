@@ -1,7 +1,7 @@
 data "aws_vpc" "NBoS_vpc" {
     filter {
       name = "tag:Name"
-      values = ["NBoS"]
+      values = ["NBoS VPC"]
     }
     filter {
       name = "tag:Stage"

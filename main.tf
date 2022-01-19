@@ -1,3 +1,5 @@
+# COMPUTE
+
 resource "aws_elastic_beanstalk_application" "NBoS" {
   name        = "NBoS_Frontend"
   description = "Front end Angular application for deployment of services."
@@ -9,7 +11,7 @@ resource "aws_elastic_beanstalk_application" "NBoS" {
   }
 }
 
-data "aws_iam_policy_document" "this" {
+data "aws_iam_policy_document" "beanstalk_service" {
   statement {
     sid = "1"
     effect = "Allow"
@@ -26,7 +28,7 @@ data "aws_iam_policy_document" "this" {
 
 resource "aws_iam_role" "beanstalk_service" {
   name = "test_role"
-  assume_role_policy = data.aws_iam_policy_document.this.json
+  assume_role_policy = data.aws_iam_policy_document.beanstalk_service.json
 
   tags = {
     Service = "ELB"
@@ -51,6 +53,7 @@ resource "aws_docdb_cluster" "NBoS" {
 resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
   count              = length(var.azs)
   identifier         = "NBoS-docdb-cluster-${count.index}"
+  availability_zone = var.azs[count.index]
   cluster_identifier = aws_docdb_cluster.default.id
   instance_class     = "db.t3.medium"
 }
@@ -66,7 +69,7 @@ resource "aws_db_instance" "NBoS" {
   engine_version            = "5.7"
   instance_class            = "db.t3.micro"
   name                      = "nbos-db-${count.index}"
-  availability_zone         = var.azs
+  availability_zone         = var.azs[count.index]
   username                  = "foo"
   password                  = "foobarbaz"
   parameter_group_name      = "default.mysql5.7"
@@ -76,32 +79,32 @@ resource "aws_db_instance" "NBoS" {
 
 # LAMBDA
 
+# Archiving to zip for code to run in function
 data "archive_file" "hello_world" {
   type = "zip"
   source_file = "${path.module}/hello_world.py"
   output_path = "${path.module}/lambda_package/hello_world.zip"
 }
 
-# add data block for role creation here
+# Creating the policy that permissions lambda service
+data "aws_iam_policy_document" "lambda_service" {
+  statement {
+    sid = "1"
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      type = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
 
+# Assigning IAM role using created policy
 resource "aws_iam_role" "iam_for_lambda" {
   name = "NBoS_lambda"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+  assume_role_policy = data.aws_iam_policy_document.lambda_service.json
 }
 
 resource "aws_lambda_function" "NBoS_lambda" {
@@ -126,9 +129,9 @@ resource "aws_lambda_function" "NBoS_lambda" {
 
 }
 
+# Establishes permission to initiate lambda code from the RDS instance
 resource "aws_lambda_permission" "hello_world" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.NBoS_lambda.function_name
   principal = "rds.amazonaws.com"
-  # source_arn = 
 }
