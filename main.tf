@@ -61,7 +61,7 @@ resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
 # RDS
 resource "aws_db_instance" "NBoS" {
 
-  count = length(data.NBoS_private_subnets)
+  count = length(data.aws_subnets.NBoS_private_subnets.ids)
 
   allocated_storage         = 10
   max_allocated_storage     = 25
