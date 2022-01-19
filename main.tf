@@ -76,12 +76,14 @@ resource "aws_db_instance" "NBoS" {
 
 # LAMBDA
 
+# Archiving to zip for code to run in function
 data "archive_file" "hello_world" {
   type = "zip"
   source_file = "${path.module}/hello_world.py"
   output_path = "${path.module}/lambda_package/hello_world.zip"
 }
 
+# Creating the policy that permissions lambda service
 data "aws_iam_policy_document" "lambda_service" {
   statement {
     sid = "1"
@@ -96,9 +98,9 @@ data "aws_iam_policy_document" "lambda_service" {
   }
 }
 
+# Assigning IAM role using created policy
 resource "aws_iam_role" "iam_for_lambda" {
   name = "NBoS_lambda"
-
   assume_role_policy = data.aws_iam_policy_document.lambda_service.json
 }
 
@@ -124,6 +126,7 @@ resource "aws_lambda_function" "NBoS_lambda" {
 
 }
 
+# Establishes permission to initiate lambda code from the RDS instance
 resource "aws_lambda_permission" "hello_world" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.NBoS_lambda.function_name
