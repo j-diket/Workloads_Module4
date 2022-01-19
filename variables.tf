@@ -7,3 +7,8 @@ variable "azs" {
   description = "Availability Zones for use"
   type        = list(string)
 }
+
+variable "stage" {
+  description = "Stage of environment: dev, test, prod"
+  type = string
+}
