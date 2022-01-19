@@ -54,14 +54,14 @@ resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
   count              = length(var.azs)
   identifier         = "NBoS-docdb-cluster-${count.index}"
   availability_zone  = var.azs[count.index]
-  cluster_identifier = aws_docdb_cluster.default.id
+  cluster_identifier = aws_docdb_cluster.NBoS.cluster_identifier
   instance_class     = "db.t3.medium"
 }
 
 # RDS
 resource "aws_db_instance" "NBoS" {
 
-  count = length(data.NBoS_private_subnets)
+  count = length(data.aws_subnets.NBoS_private_subnets.ids)
 
   allocated_storage         = 10
   max_allocated_storage     = 25
