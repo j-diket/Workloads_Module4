@@ -108,8 +108,8 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 resource "aws_lambda_function" "NBoS_lambda" {
-  s3_bucket        = data.aws_s3_bucket.NBoS_bucket
-  function_name    = "Hello World"
+  # s3_bucket        = data.aws_s3_bucket.NBoS_bucket.bucket
+  function_name    = "HelloWorld"
   role             = aws_iam_role.iam_for_lambda.arn
   filename         = data.archive_file.hello_world.output_path
   source_code_hash = data.archive_file.hello_world.output_base64sha256
