@@ -10,5 +10,5 @@ variable "azs" {
 
 variable "stage" {
   description = "Stage of environment: dev, test, prod"
-  type = string
+  type        = string
 }

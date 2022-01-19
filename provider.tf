@@ -19,8 +19,8 @@ provider "aws" {
   default_tags {
     tags = {
       Region = var.aws_region_primary
-      Owner   = "NBoS"
-      Stage = var.stage
+      Owner  = "NBoS"
+      Stage  = var.stage
     }
   }
 }
