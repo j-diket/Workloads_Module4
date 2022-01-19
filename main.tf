@@ -13,21 +13,21 @@ resource "aws_elastic_beanstalk_application" "NBoS" {
 
 data "aws_iam_policy_document" "beanstalk_service" {
   statement {
-    sid = "1"
+    sid    = "1"
     effect = "Allow"
     actions = [
       "sts:AssumeRole"
     ]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["elasticbeanstalk.amazonaws.com"]
     }
   }
 }
 
 resource "aws_iam_role" "beanstalk_service" {
-  name = "test_role"
+  name               = "test_role"
   assume_role_policy = data.aws_iam_policy_document.beanstalk_service.json
 
   tags = {
@@ -53,14 +53,14 @@ resource "aws_docdb_cluster" "NBoS" {
 resource "aws_docdb_cluster_instance" "NB0S-cluster_instances" {
   count              = length(var.azs)
   identifier         = "NBoS-docdb-cluster-${count.index}"
-  availability_zone = var.azs[count.index]
+  availability_zone  = var.azs[count.index]
   cluster_identifier = aws_docdb_cluster.default.id
   instance_class     = "db.t3.medium"
 }
 
 # RDS
 resource "aws_db_instance" "NBoS" {
-  
+
   count = length(data.NBoS_private_subnets)
 
   allocated_storage         = 10
@@ -81,7 +81,7 @@ resource "aws_db_instance" "NBoS" {
 
 # Archiving to zip for code to run in function
 data "archive_file" "hello_world" {
-  type = "zip"
+  type        = "zip"
   source_file = "${path.module}/hello_world.py"
   output_path = "${path.module}/lambda_package/hello_world.zip"
 }
@@ -89,13 +89,13 @@ data "archive_file" "hello_world" {
 # Creating the policy that permissions lambda service
 data "aws_iam_policy_document" "lambda_service" {
   statement {
-    sid = "1"
+    sid    = "1"
     effect = "Allow"
     actions = [
       "sts:AssumeRole"
     ]
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
   }
@@ -103,20 +103,20 @@ data "aws_iam_policy_document" "lambda_service" {
 
 # Assigning IAM role using created policy
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "NBoS_lambda"
+  name               = "NBoS_lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_service.json
 }
 
 resource "aws_lambda_function" "NBoS_lambda" {
-  s3_bucket     = data.aws_s3_bucket.NBoS_bucket
-  function_name = "Hello World"
-  role          = aws_iam_role.iam_for_lambda.arn
-  filename      = data.archive_file.hello_world.output_path
+  s3_bucket        = data.aws_s3_bucket.NBoS_bucket
+  function_name    = "Hello World"
+  role             = aws_iam_role.iam_for_lambda.arn
+  filename         = data.archive_file.hello_world.output_path
   source_code_hash = data.archive_file.hello_world.output_base64sha256
 
-  runtime = "python3.9"
-  handler = "hello_world.hello_world"
-  timeout = 900
+  runtime     = "python3.9"
+  handler     = "hello_world.hello_world"
+  timeout     = 900
   memory_size = 1024
 
   environment {
@@ -131,7 +131,7 @@ resource "aws_lambda_function" "NBoS_lambda" {
 
 # Establishes permission to initiate lambda code from the RDS instance
 resource "aws_lambda_permission" "hello_world" {
-  action = "lambda:InvokeFunction"
+  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.NBoS_lambda.function_name
-  principal = "rds.amazonaws.com"
+  principal     = "rds.amazonaws.com"
 }

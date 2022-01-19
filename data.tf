@@ -1,24 +1,24 @@
 data "aws_vpc" "NBoS_vpc" {
-    filter {
-      name = "tag:Name"
-      values = ["NBoS VPC"]
-    }
-    filter {
-      name = "tag:Stage"
-      values = ["dev"]
-    }
+  filter {
+    name   = "tag:Name"
+    values = ["NBoS VPC"]
+  }
+  filter {
+    name   = "tag:Stage"
+    values = ["dev"]
+  }
 }
 
 data "aws_subnet" "NBoS_public_subnets" {
   filter {
-    name = "tag:Name"
+    name   = "tag:Name"
     values = ["Public-*"]
   }
 }
 
 data "aws_subnet" "NBoS_private_subnets" {
   filter {
-    name = "tag:Name"
+    name   = "tag:Name"
     values = ["Private-*"]
   }
 }
