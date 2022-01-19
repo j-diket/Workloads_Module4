@@ -22,5 +22,4 @@ provider "aws" {
       User   = "NBoS"
     }
   }
-
 }
